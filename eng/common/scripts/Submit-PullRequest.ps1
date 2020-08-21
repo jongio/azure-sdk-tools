@@ -44,6 +44,17 @@ param(
   $PRDataArtifactPath
 )
 
+# Writes Data of PR created to an Artifact file
+function Write-PRDataArtifact($PRNumber)
+{
+  if (Test-Path $PRDataArtifactPath)
+  {
+    $PRData = "$RepoOwner;$RepoName;$PRNumber"
+    Add-Content -Path $PRDataArtifactPath -Value $PRData
+  }
+}
+
+
 $headers = @{
   Authorization = "bearer $AuthToken"
 }
@@ -61,6 +72,7 @@ $resp | Write-Verbose
 
 if ($resp.Count -gt 0) {
     Write-Host -f green "Pull request already exists $($resp[0].html_url)"
+    Write-PRDataArtifact -PRNumber $resp.number
 
     # setting variable to reference the pull request by number
     Write-Host "##vso[task.setvariable variable=Submitted.PullRequest.Number]$($resp[0].number)"
@@ -86,11 +98,7 @@ else {
 
   $resp | Write-Verbose
   Write-Host -f green "Pull request created https://github.com/$RepoOwner/$RepoName/pull/$($resp.number)"
-  if (Test-Path $PRDataArtifactPath)
-  {
-    $PRData = "$RepoOwner;$RepoName;$($resp.number)"
-    Add-Content -Path $PRDataArtifactPath -Value $PRData
-  }
+  Write-PRDataArtifact -PRNumber $resp.number
 
   # setting variable to reference the pull request by number
   Write-Host "##vso[task.setvariable variable=Submitted.PullRequest.Number]$($resp.number)"
