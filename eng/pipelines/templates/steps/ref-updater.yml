@@ -3,7 +3,7 @@ parameters:
   Tag: ''
   ToolRepo: ''
   ToolsRepoPath: ''
-  Repos: []
+  Repos: ${{ parameters.RepoList }}
 
 steps:
 

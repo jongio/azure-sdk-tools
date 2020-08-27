@@ -6,29 +6,28 @@ pr: none
 pool:
   vmImage: windows-2019
 
-parameters:
-  - template: /eng/pipelines/templates/parameters/lang-repos.yml
+extends:
+  template: /eng/pipelines/templates/parameters/lang-repos.yml
+  parameters:
+    YamlStructure:
+      jobs:
+        - job: TagToolsRepo
+          displayName: Version azure-sdk-tools with Git Tag
 
+          steps:
+          - pwsh: |
+              $PushURL = "$(Build.Repository.Uri)".Replace("https://", "https://$(azuresdk-github-pat)@") + ".git"
+              # Remove Organization name i.e Transform Azure/azure-sdk-tools -> azure-sdk-tools before appending build Number
+              $Tag = "$(Build.Repository.Name)".SubString("$(Build.Repository.Name)".IndexOf('/') + 1) + "_$(Build.BuildNumber)"
+              Write-Host "Tagging Repo with $Tag"
+              echo "##vso[task.setvariable variable=Tag]$Tag"
+              git -c user.name="azure-sdk" -c user.email="azuresdk@microsoft.com" tag -a $tag -m "Release tools version $Tag"
+              git push $PushURL $tag
+            displayName: Create and Push Version Tag
+            workingDirectory: $(Build.SourcesDirectory)
 
-jobs:
-  - job: TagToolsRepo
-    displayName: Version azure-sdk-tools with Git Tag
-
-    steps:
-    - pwsh: |
-        $PushURL = "$(Build.Repository.Uri)".Replace("https://", "https://$(azuresdk-github-pat)@") + ".git"
-        # Remove Organization name i.e Transform Azure/azure-sdk-tools -> azure-sdk-tools before appending build Number
-        $Tag = "$(Build.Repository.Name)".SubString("$(Build.Repository.Name)".IndexOf('/') + 1) + "_$(Build.BuildNumber)"
-        Write-Host "Tagging Repo with $Tag"
-        echo "##vso[task.setvariable variable=Tag]$Tag"
-        git -c user.name="azure-sdk" -c user.email="azuresdk@microsoft.com" tag -a $tag -m "Release tools version $Tag"
-        git push $PushURL $tag
-      displayName: Create and Push Version Tag
-      workingDirectory: $(Build.SourcesDirectory)
-
-    - template: /eng/pipelines/templates/steps/ref-updater.yml
-      parameters:
-        Tag: $(Tag)
-        ToolRepo: azure-sdk-tools
-        ToolsRepoPath: $(Build.SourcesDirectory)
-        Repos: ${{ parameters.RepoList }}
+          - template: /eng/pipelines/templates/steps/ref-updater.yml
+            parameters:
+              Tag: $(Tag)
+              ToolRepo: azure-sdk-tools
+              ToolsRepoPath: $(Build.SourcesDirectory)
