@@ -6,6 +6,10 @@ pr: none
 pool:
   vmImage: windows-2019
 
+parameters:
+  - template: /eng/pipelines/templates/parameters/lang-repos.yml
+
+
 jobs:
   - job: TagToolsRepo
     displayName: Version azure-sdk-tools with Git Tag
@@ -27,13 +31,4 @@ jobs:
         Tag: $(Tag)
         ToolRepo: azure-sdk-tools
         ToolsRepoPath: $(Build.SourcesDirectory)
-        Repos:
-          - azure-sdk-for-android
-          - azure-sdk-for-c
-          - azure-sdk-for-cpp
-          - azure-sdk-for-go
-          - azure-sdk-for-ios
-          - azure-sdk-for-java
-          - azure-sdk-for-js
-          - azure-sdk-for-net
-          - azure-sdk-for-python
+        Repos: ${{ parameters.RepoList }}
