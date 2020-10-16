@@ -14,25 +14,25 @@ parameters:
   default: master
 - name: Repos
   type: object
-  default:
-    azure-sdk-for-android:
+  values:
+    - name: azure-sdk-for-android
       testPipelineDefinitionID: ''
-    azure-sdk-for-c:
+    - name: azure-sdk-for-c
       testPipelineDefinitionID: ''
-    azure-sdk-for-cpp:
+    - name: azure-sdk-for-cpp
       testPipelineDefinitionID: ''
-    azure-sdk-for-go:
+    - name: azure-sdk-for-go
       testPipelineDefinitionID: ''
-    azure-sdk-for-ios:
+    - name: azure-sdk-for-ios
       testPipelineDefinitionID: ''
-    azure-sdk-for-java:
-      testPipelineDefinitionID: '731'
-    azure-sdk-for-js:
-      testPipelineDefinitionID: '832'
-    azure-sdk-for-net:
-      testPipelineDefinitionID: '1191'
-    azure-sdk-for-python:
-      testPipelineDefinitionID: '1036'
+    - name: azure-sdk-for-java
+      testPipelineDefinitionID: 731
+    - name: azure-sdk-for-js
+      testPipelineDefinitionID: 832
+    - name: azure-sdk-for-net
+      testPipelineDefinitionID: 1191
+    - name: azure-sdk-for-python
+      testPipelineDefinitionID: 1036
 
 trigger: none
 
